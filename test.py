@@ -15,24 +15,33 @@ def get_clean_news(category):
     news_list = []
     
     for entry in feed.entries:
-        # --- 画像取得 (さらに強化版) ---
         img_url = None
-        # 1. media_thumbnailを探す
+        
+        # --- 画像URLを探す最強パターン ---
+        # A. media_thumbnail (一番標準的)
         if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
             img_url = entry.media_thumbnail[0]['url']
-        # 2. linksからenclosure(画像)を探す
+        
+        # B. linksの中の画像用URL (NHKで多いパターン)
         if not img_url and 'links' in entry:
             for link in entry.links:
-                if 'image' in link.get('type', ''):
+                if 'image' in link.get('type', '') or 'enclosure' in link.get('rel', ''):
                     img_url = link.get('href')
                     break
-        # 3. どうしても無い時のダミー
-        if not img_url:
-            img_url = "https://via.placeholder.com/800x450.png?text=No+Image"
+        
+        # C. 概要(summary)の中のimgタグから抽出
+        if not img_url and 'summary' in entry:
+            match = re.search(r'src=["\'](.*?\.(?:jpg|png|gif|jpeg).*?)["\']', entry.summary, re.IGNORECASE)
+            if match:
+                img_url = match.group(1)
 
-        # --- 説明文の掃除 (HTMLタグを消す) ---
+        # D. それでも無い場合の最終予備 (NHKのロゴなどを避けるためのダミー)
+        if not img_url or "logo" in img_url.lower():
+            img_url = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
+
+        # --- 説明文の掃除 ---
         summary = entry.get('summary', '')
-        summary = re.sub(r'<.*?>', '', summary) # <img...> などを消して文字だけにする
+        summary = re.sub(r'<.*?>', '', summary).strip() 
 
         news_list.append({
             "title": entry.title,
@@ -42,7 +51,6 @@ def get_clean_news(category):
         })
     return news_list
 
-# 404を防ぐためのルーティング設定
 @app.route('/')
 def home():
     return redirect('/it')
@@ -51,7 +59,6 @@ def home():
 def show_news(category):
     if category not in RSS_URLS:
         return redirect('/it')
-    
     news = get_clean_news(category)
     return render_template('index.html', news=news, mode=category)
 
