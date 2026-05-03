@@ -4,10 +4,11 @@ import re
 
 app = Flask(__name__)
 
+# カテゴリとURLを整理
 RSS_URLS = {
-    "it": "https://www.nhk.or.jp/rss/news/cat7.xml",
-    "sports": "https://www.nhk.or.jp/rss/news/cat5.xml",
-    "science": "https://www.nhk.or.jp/rss/news/cat6.xml"
+    "politics": "https://www.nhk.or.jp/rss/news/cat1.xml", # 政治
+    "sports": "https://www.nhk.or.jp/rss/news/cat5.xml",   # スポーツ
+    "others": "https://www.nhk.or.jp/rss/news/cat7.xml"    # その他(IT/科学など)
 }
 
 def get_clean_news(category):
@@ -16,30 +17,18 @@ def get_clean_news(category):
     
     for entry in feed.entries:
         img_url = None
-        
-        # --- 画像URLを探す最強パターン ---
-        # A. media_thumbnail (一番標準的)
+        # 画像取得ロジック（最強版を維持）
         if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
             img_url = entry.media_thumbnail[0]['url']
-        
-        # B. linksの中の画像用URL (NHKで多いパターン)
         if not img_url and 'links' in entry:
             for link in entry.links:
                 if 'image' in link.get('type', '') or 'enclosure' in link.get('rel', ''):
                     img_url = link.get('href')
                     break
-        
-        # C. 概要(summary)の中のimgタグから抽出
-        if not img_url and 'summary' in entry:
-            match = re.search(r'src=["\'](.*?\.(?:jpg|png|gif|jpeg).*?)["\']', entry.summary, re.IGNORECASE)
-            if match:
-                img_url = match.group(1)
-
-        # D. それでも無い場合の最終予備 (NHKのロゴなどを避けるためのダミー)
-        if not img_url or "logo" in img_url.lower():
+        if not img_url:
+            # ニュースらしい代わりの画像
             img_url = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
-        # --- 説明文の掃除 ---
         summary = entry.get('summary', '')
         summary = re.sub(r'<.*?>', '', summary).strip() 
 
@@ -53,12 +42,12 @@ def get_clean_news(category):
 
 @app.route('/')
 def home():
-    return redirect('/it')
+    return redirect('/sports') # 最初はスポーツを表示
 
 @app.route('/<category>')
 def show_news(category):
     if category not in RSS_URLS:
-        return redirect('/it')
+        return redirect('/sports')
     news = get_clean_news(category)
     return render_template('index.html', news=news, mode=category)
 
