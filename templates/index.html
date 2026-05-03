@@ -34,7 +34,6 @@
             text-align: center;
         }
 
-        /* カテゴリボタンのスタイル */
         .nav-buttons {
             display: flex;
             gap: 10px;
@@ -61,7 +60,6 @@
             background: #eaf5ff;
         }
 
-        /* ニュースカードのレイアウト（上にデカ画像、下にテキスト） */
         .news-container {
             width: 100%;
             max-width: 600px;
@@ -90,7 +88,7 @@
             aspect-ratio: 16 / 9;
             object-fit: cover;
             display: block;
-            background-color: #ddd; /* 画像読み込み中の色 */
+            background-color: #ddd;
         }
 
         .card-content {
@@ -98,20 +96,19 @@
         }
 
         .news-card h2 {
-            font-size: 1.2rem; /* タイトルは中ぐらい */
+            font-size: 1.2rem;
             margin: 0 0 10px 0;
             line-height: 1.4;
             color: var(--text-color);
         }
 
         .news-card p {
-            font-size: 0.9rem; /* 説明文は小さめ */
+            font-size: 0.9rem;
             color: var(--sub-text-color);
             line-height: 1.6;
             margin: 0;
         }
 
-        /* スマホ向けの微調整 */
         @media (max-width: 600px) {
             body { padding: 10px; }
             .news-card h2 { font-size: 1.1rem; }
@@ -123,9 +120,9 @@
     <h1>NEWS STREAM</h1>
     
     <div class="nav-buttons">
-        <a href="/sports" class="{{ 'active' if mode == 'sports' }}">Sports</a>
-        <a href="/politics" class="{{ 'active' if mode == 'politics' }}">政治外交</a>
-        <a href="/others" class="{{ 'active' if mode == 'others' }}">その他</a>
+        <a href="/others" class="{{ 'active' if mode == 'others' }}">スポーツ</a>
+        <a href="/sports" class="{{ 'active' if mode == 'sports' }}">政治外交</a>
+        <a href="/politics" class="{{ 'active' if mode == 'politics' }}">事件、事故</a>
     </div>
 
     <div class="news-container">
