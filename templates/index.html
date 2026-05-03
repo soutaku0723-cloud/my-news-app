@@ -18,108 +18,57 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Noto Sans JP', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            color: var(--text-color);
-            margin: 20px 0 30px 0;
-            letter-spacing: 1px;
-            text-align: center;
-        }
+        h1 { font-family: 'Orbitron', sans-serif; margin: 20px 0; }
 
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
+        /* カテゴリボタン */
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
         .nav-buttons a {
-            text-decoration: none;
-            color: var(--sub-text-color);
-            padding: 10px 25px;
-            border: 2px solid #e1e4e8;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            transition: all 0.2s;
-            background: var(--card-bg);
+            text-decoration: none; color: var(--sub-text-color);
+            padding: 10px 20px; border: 2px solid #e1e4e8;
+            border-radius: 30px; background: var(--card-bg); font-weight: bold;
         }
+        .nav-buttons a.active { border-color: var(--accent-color); color: var(--accent-color); }
 
-        .nav-buttons a:hover, .nav-buttons a.active {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            background: #eaf5ff;
-        }
-
-        .news-container {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
+        /* ニュースカード (縦並び) */
+        .news-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 30px; }
+        
         .news-card {
             background: var(--card-bg);
-            border: 1px solid #e1e4e8;
-            border-radius: 12px;
-            transition: all 0.3s;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
+            border-radius: 15px;
             overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
+        .news-card:hover { transform: translateY(-5px); }
 
-        .news-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-
+        /* 上のデカ画像 */
         .card-image {
-            width: 150px;
-            height: 100px;
+            width: 100%;
+            aspect-ratio: 16 / 9; /* 横長に固定 */
             object-fit: cover;
-            flex-shrink: 0;
+            display: block;
         }
 
-        .card-content {
-            padding: 15px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        /* 下のテキストエリア */
+        .card-content { padding: 20px; }
 
         .news-card h2 {
-            font-size: 1.05rem;
-            margin: 0 0 8px 0;
-            color: var(--text-color);
-            line-height: 1.5;
+            font-size: 1.2rem; /* 中ぐらい */
+            margin: 0 0 10px 0;
+            line-height: 1.4;
         }
 
-        .news-card .meta {
-            font-size: 0.8rem;
+        .news-card p {
+            font-size: 0.9rem; /* 小さめ */
             color: var(--sub-text-color);
-        }
-
-        /* スマホ向けの表示調整 */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            .card-image {
-                width: 100px;
-                height: 80px;
-            }
-            .news-card h2 {
-                font-size: 0.95rem;
-            }
+            line-height: 1.6;
+            margin: 0;
         }
     </style>
 </head>
@@ -130,15 +79,14 @@
         <a href="/sports" class="{{ 'active' if mode == 'sports' }}">Sports</a>
         <a href="/science" class="{{ 'active' if mode == 'science' }}">Science</a>
     </div>
+
     <div class="news-container">
         {% for item in news %}
         <a href="{{ item.link }}" target="_blank" class="news-card">
-            <img src="{{ item.img_url }}" alt="{{ item.title }}" class="card-image">
+            <img src="{{ item.img_url }}" alt="" class="card-image">
             <div class="card-content">
                 <h2>{{ item.title }}</h2>
-                <div class="meta">
-                    {{ mode.upper() }} / NHK NEWS
-                </div>
+                <p>{{ item.summary }}</p>
             </div>
         </a>
         {% endfor %}
