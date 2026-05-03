@@ -2,110 +2,145 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>News Stream - White & Green</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI NEWS STREAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* 背景を明るい白に、文字を濃いグレーにして読みやすく */
-        body { 
-            background-color: #F0F2F5; 
-            color: #1a1a1a; 
-            font-family: 'Helvetica Neue', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; 
-            padding: 40px; 
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        :root {
+            --bg-color: #f6f8fa;
+            --card-bg: #ffffff;
+            --accent-color: #007bff;
+            --text-color: #24292e;
+            --sub-text-color: #586069;
         }
 
-        h1 { 
-            color: #1DB954; 
-            font-size: 2.2rem;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin: 20px 0 30px 0;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
             margin-bottom: 30px;
-            font-weight: 800;
         }
-        
-        /* ボタン：白ベースに緑の枠線 */
-        .btn { 
-            background-color: #FFFFFF; 
-            color: #1DB954; 
-            padding: 12px 28px; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            margin-right: 12px; 
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: var(--sub-text-color);
+            padding: 10px 25px;
+            border: 2px solid #e1e4e8;
+            border-radius: 30px;
+            font-size: 0.95rem;
             font-weight: bold;
-            display: inline-block;
-            border: 2px solid #1DB954;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
+            background: var(--card-bg);
         }
-        
-        /* ホバーした時に緑が反転する */
-        .btn:hover { 
-            background-color: #1DB954; 
-            color: #FFFFFF; 
-            transform: translateY(-2px);
+
+        .nav-buttons a:hover, .nav-buttons a.active {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: #eaf5ff;
         }
-        
-        /* ニュースカード：白背景に薄い影 */
-        .card { 
-            background-color: #FFFFFF; 
-            padding: 20px; 
-            margin-top: 16px; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: 0.3s; 
+
+        .news-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        
-        .card:hover { 
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+
+        .news-card {
+            background: var(--card-bg);
+            border: 1px solid #e1e4e8;
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            overflow: hidden;
         }
-        
-        /* スコア：薄い緑の背景に濃い緑の文字 */
-        .score { 
-            background-color: #e8f5e9; 
-            color: #1DB954; 
-            font-weight: bold; 
-            padding: 6px 16px; 
-            border-radius: 20px; 
-            margin-right: 20px; 
-            min-width: 60px; 
-            text-align: center; 
-            font-size: 0.9rem;
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
-        
-        /* ニュースタイトル */
-        .content a { 
-            color: #1a1a1a; 
-            text-decoration: none; 
-            font-size: 1.1rem; 
-            font-weight: 600; 
+
+        .card-image {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            flex-shrink: 0;
         }
-        
-        .content a:hover { 
-            color: #1DB954;
-            text-decoration: underline;
+
+        .card-content {
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .news-card h2 {
+            font-size: 1.05rem;
+            margin: 0 0 8px 0;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .news-card .meta {
+            font-size: 0.8rem;
+            color: var(--sub-text-color);
+        }
+
+        /* スマホ向けの表示調整 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .card-image {
+                width: 100px;
+                height: 80px;
+            }
+            .news-card h2 {
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>News Stream: {{ mode.upper() }}</h1>
-        
-        <div style="margin-bottom: 40px;">
-            <a href="/?mode=it" class="btn">IT</a>
-            <a href="/?mode=sports" class="btn">Sports</a>
-            <a href="/?mode=science" class="btn">Science</a>
-        </div>
-
+    <h1>NEWS STREAM</h1>
+    <div class="nav-buttons">
+        <a href="/it" class="{{ 'active' if mode == 'it' }}">IT</a>
+        <a href="/sports" class="{{ 'active' if mode == 'sports' }}">Sports</a>
+        <a href="/science" class="{{ 'active' if mode == 'science' }}">Science</a>
+    </div>
+    <div class="news-container">
         {% for item in news %}
-        <div class="card">
-            <div class="score">{{ item.score }}pt</div>
-            <div class="content">
-                <a href="{{ item.link }}" target="_blank">{{ item.title }}</a>
+        <a href="{{ item.link }}" target="_blank" class="news-card">
+            <img src="{{ item.img_url }}" alt="{{ item.title }}" class="card-image">
+            <div class="card-content">
+                <h2>{{ item.title }}</h2>
+                <div class="meta">
+                    {{ mode.upper() }} / NHK NEWS
+                </div>
             </div>
-        </div>
+        </a>
         {% endfor %}
     </div>
 </body>
