@@ -4,10 +4,11 @@ import re
 
 app = Flask(__name__)
 
+# NHKを卒業して、無料で読めるハフポストなどのRSSに切り替え
 RSS_URLS = {
-    "politics": "https://www.nhk.or.jp/rss/news/cat1.xml",
-    "sports": "https://www.nhk.or.jp/rss/news/cat5.xml",
-    "others": "https://www.nhk.or.jp/rss/news/cat7.xml"
+    "politics": "https://www.huffingtonpost.jp/feeds/verticals/politics/index.xml", # 政治
+    "sports": "https://www.huffingtonpost.jp/feeds/verticals/sports/index.xml",     # スポーツ
+    "others": "https://www.huffingtonpost.jp/feeds/index.xml"                     # 総合（その他）
 }
 
 def get_clean_news(category, search_query=None):
@@ -18,18 +19,19 @@ def get_clean_news(category, search_query=None):
         title = entry.title
         summary = re.sub(r'<.*?>', '', entry.get('summary', '')).strip()
         
-        # 検索ワードがある場合、タイトルか説明文に含まれていない記事は飛ばす
+        # 検索機能
         if search_query and search_query.lower() not in (title + summary).lower():
             continue
 
+        # 画像取得（ハフポスト用）
         img_url = None
-        if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
-            img_url = entry.media_thumbnail[0]['url']
-        if not img_url and 'links' in entry:
+        if 'links' in entry:
             for link in entry.links:
-                if 'image' in link.get('type', '') or 'enclosure' in link.get('rel', ''):
+                if 'image' in link.get('type', ''):
                     img_url = link.get('href')
                     break
+        
+        # 画像が見つからない場合の予備（Unsplashのカッコいいニュース画像）
         if not img_url:
             img_url = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
@@ -50,7 +52,6 @@ def show_news(category):
     if category not in RSS_URLS:
         return redirect('/sports')
     
-    # 検索窓からの入力を受け取る
     search_query = request.args.get('q', '')
     news = get_clean_news(category, search_query)
     
