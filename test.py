@@ -4,20 +4,25 @@ import re
 
 app = Flask(__name__)
 
-# カテゴリとURLを整理
 RSS_URLS = {
-    "politics": "https://www.nhk.or.jp/rss/news/cat1.xml", # 政治
-    "sports": "https://www.nhk.or.jp/rss/news/cat5.xml",   # スポーツ
-    "others": "https://www.nhk.or.jp/rss/news/cat7.xml"    # その他(IT/科学など)
+    "politics": "https://www.nhk.or.jp/rss/news/cat1.xml",
+    "sports": "https://www.nhk.or.jp/rss/news/cat5.xml",
+    "others": "https://www.nhk.or.jp/rss/news/cat7.xml"
 }
 
-def get_clean_news(category):
+def get_clean_news(category, search_query=None):
     feed = feedparser.parse(RSS_URLS[category])
     news_list = []
     
     for entry in feed.entries:
+        title = entry.title
+        summary = re.sub(r'<.*?>', '', entry.get('summary', '')).strip()
+        
+        # 検索ワードがある場合、タイトルか説明文に含まれていない記事は飛ばす
+        if search_query and search_query.lower() not in (title + summary).lower():
+            continue
+
         img_url = None
-        # 画像取得ロジック（最強版を維持）
         if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
             img_url = entry.media_thumbnail[0]['url']
         if not img_url and 'links' in entry:
@@ -26,14 +31,10 @@ def get_clean_news(category):
                     img_url = link.get('href')
                     break
         if not img_url:
-            # ニュースらしい代わりの画像
             img_url = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
-        summary = entry.get('summary', '')
-        summary = re.sub(r'<.*?>', '', summary).strip() 
-
         news_list.append({
-            "title": entry.title,
+            "title": title,
             "link": entry.link,
             "summary": summary,
             "img_url": img_url
@@ -42,14 +43,18 @@ def get_clean_news(category):
 
 @app.route('/')
 def home():
-    return redirect('/sports') # 最初はスポーツを表示
+    return redirect('/sports')
 
 @app.route('/<category>')
 def show_news(category):
     if category not in RSS_URLS:
         return redirect('/sports')
-    news = get_clean_news(category)
-    return render_template('index.html', news=news, mode=category)
+    
+    # 検索窓からの入力を受け取る
+    search_query = request.args.get('q', '')
+    news = get_clean_news(category, search_query)
+    
+    return render_template('index.html', news=news, mode=category, search_query=search_query)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
