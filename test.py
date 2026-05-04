@@ -4,22 +4,23 @@ import re
 
 app = Flask(__name__)
 
-# ニュースソース（ここから全部取ってくる）
+# YahooニュースのRSSに変更（記事が豊富なので政治がゼロになるのを防ぐ）
 RSS_SOURCES = [
-    "https://www.huffingtonpost.jp/feeds/index.xml",
-    "https://www.huffingtonpost.jp/feeds/verticals/politics/index.xml",
-    "https://www.huffingtonpost.jp/feeds/verticals/sports/index.xml"
+    "https://news.yahoo.co.jp/rss/topics/top-picks.xml",
+    "https://news.yahoo.co.jp/rss/topics/domestic.xml",
+    "https://news.yahoo.co.jp/rss/topics/world.xml",
+    "https://news.yahoo.co.jp/rss/topics/sports.xml"
 ]
 
-# 仕分け用キーワードリスト
+# キーワードを少し強化
 KEYWORDS = {
-    "sports": ["試合", "選手", "優勝", "監督", "五輪", "大谷", "勝利", "得点", "野球", "サッカー", "バスケ", "テニス", "スタジアム"],
-    "politics": ["首相", "大臣", "選挙", "政府", "国会", "外交", "会談", "大統領", "首脳", "自民", "立憲", "米軍", "条約", "政策"]
+    "sports": ["試合", "選手", "優勝", "監督", "五輪", "大谷", "勝利", "得点", "野球", "サッカー", "バスケ", "テニス", "スタジアム", "連勝", "打者", "ホームラン", "スポーツ"],
+    "politics": ["首相", "大臣", "選挙", "政府", "国会", "外交", "会談", "大統領", "首脳", "自民", "立憲", "米軍", "条約", "政策", "法案", "政治", "議員", "バイデン", "岸田"]
 }
 
 def get_categorized_news(target_category, search_query=None):
     all_news = []
-    seen_links = set() # 重複チェック用
+    seen_links = set()
 
     for url in RSS_SOURCES:
         feed = feedparser.parse(url)
@@ -30,47 +31,38 @@ def get_categorized_news(target_category, search_query=None):
 
             title = entry.title
             summary = re.sub(r'<.*?>', '', entry.get('summary', '')).strip()
-            text_for_judge = (title + summary).lower()
 
-            # --- 仕分けロジック ---
-            # 1. 政治外交キーワードが含まれるか？
-            is_politics = any(k in text_for_judge for k in KEYWORDS["politics"])
-            # 2. スポーツキーワードが含まれるか？
-            is_sports = any(k in text_for_judge for k in KEYWORDS["sports"])
+            # 判定を「タイトルだけ」に変更して誤爆を防止！
+            is_politics = any(k in title for k in KEYWORDS["politics"])
+            is_sports = any(k in title for k in KEYWORDS["sports"])
 
-            # 最終的な判定
             determined_cat = "others"
             if is_politics:
                 determined_cat = "politics"
             elif is_sports:
                 determined_cat = "sports"
 
-            # ユーザーが選んだカテゴリと一致するか確認
             if determined_cat != target_category:
                 continue
 
-            # 検索窓のフィルタ
-            if search_query and search_query.lower() not in text_for_judge:
+            if search_query and search_query.lower() not in title.lower():
                 continue
 
-            # 画像取得
-            img_url = None
+            img_url = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
             if 'links' in entry:
                 for link in entry.links:
                     if 'image' in link.get('type', ''):
                         img_url = link.get('href')
                         break
-            if not img_url:
-                img_url = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80"
 
             all_news.append({
                 "title": title,
                 "link": entry.link,
-                "summary": summary,
+                "summary": summary, # 画面には出さないが、AI要約ボタンのために裏で持っておく
                 "img_url": img_url
             })
     
-    return all_news[:15] # 最新15件を返す
+    return all_news[:15]
 
 @app.route('/')
 def home():
