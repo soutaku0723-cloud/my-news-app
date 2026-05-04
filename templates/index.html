@@ -6,6 +6,7 @@
     <title>NEWS STREAM</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* 以前のCSSと同じベース設定 */
         :root {
             --bg-color: #f6f8fa;
             --card-bg: #ffffff;
@@ -14,138 +15,47 @@
             --sub-text-color: #586069;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Noto Sans JP', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Noto Sans JP', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; margin: 20px 0; letter-spacing: 1px; }
 
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            color: var(--text-color);
-            margin: 20px 0 20px 0;
-            letter-spacing: 1px;
-            text-align: center;
-        }
+        .search-container { width: 100%; max-width: 600px; margin-bottom: 30px; }
+        .search-form { display: flex; gap: 10px; }
+        .search-input { flex: 1; padding: 12px 20px; border-radius: 30px; border: 2px solid #e1e4e8; outline: none; font-size: 1rem; }
+        .search-button { padding: 10px 25px; border-radius: 30px; border: none; background: var(--accent-color); color: white; font-weight: bold; cursor: pointer; }
 
-        /* 検索窓 */
-        .search-container {
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
-        .search-form {
-            display: flex;
-            gap: 10px;
-        }
-        .search-input {
-            flex: 1;
-            padding: 12px 20px;
-            border-radius: 30px;
-            border: 2px solid #e1e4e8;
-            outline: none;
-            font-size: 1rem;
-        }
-        .search-button {
-            padding: 10px 25px;
-            border-radius: 30px;
-            border: none;
-            background: var(--accent-color);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
+        .nav-buttons a { text-decoration: none; color: var(--sub-text-color); padding: 10px 25px; border: 2px solid #e1e4e8; border-radius: 30px; font-size: 0.95rem; font-weight: bold; background: var(--card-bg); }
+        .nav-buttons a.active { border-color: var(--accent-color); color: var(--accent-color); background: #eaf5ff; }
 
-        /* カテゴリボタン */
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .nav-buttons a {
-            text-decoration: none;
-            color: var(--sub-text-color);
-            padding: 10px 25px;
-            border: 2px solid #e1e4e8;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            transition: all 0.2s;
-            background: var(--card-bg);
-        }
-
-        .nav-buttons a:hover, .nav-buttons a.active {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            background: #eaf5ff;
-        }
-
-        /* ニュース一覧（2列グリッド） */
-        .news-container {
-            width: 100%;
-            max-width: 800px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
+        .news-container { width: 100%; max-width: 800px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
         .news-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-            border: 1px solid #e1e4e8;
-            display: flex;
-            flex-direction: column;
+            background: var(--card-bg); border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e1e4e8; display: flex; flex-direction: column;
         }
+        
+        .card-link { text-decoration: none; color: inherit; display: block; }
+        .card-link:hover { opacity: 0.8; }
+        .card-image { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background-color: #eee; display: block;}
+        
+        .card-content { padding: 15px; flex-grow: 1; }
+        .card-content h2 { font-size: 1rem; margin: 0 0 15px 0; line-height: 1.5; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 
-        .news-card:hover {
-            transform: translateY(-5px);
+        /* AI要約ボタンとテキストのスタイル */
+        .ai-btn {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white; border: none; padding: 8px 15px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
+            transition: transform 0.2s;
         }
-
-        .card-image {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            background-color: #eee;
-        }
-
-        .card-content {
-            padding: 15px;
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-        }
-
-        .news-card h2 {
-            font-size: 1rem;
-            margin: 0;
-            line-height: 1.5;
-            color: var(--text-color);
-            /* タイトルも長すぎる場合は2行で省略 */
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
-            overflow: hidden;
-        }
-
-        /* スマホ向け調整 */
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .news-container { grid-template-columns: 1fr; }
-            .nav-buttons a { padding: 8px 15px; font-size: 0.85rem; }
+        .ai-btn:hover { transform: scale(1.05); }
+        .ai-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        .ai-text-box {
+            font-size: 0.85rem; color: #444; line-height: 1.6;
+            margin-top: 10px; min-height: 0;
+            background: #f8f9fa; border-left: 3px solid #a777e3; padding: 0 10px;
+            display: none; /* 初期状態は非表示 */
         }
     </style>
 </head>
@@ -167,15 +77,51 @@
 
     <div class="news-container">
         {% for item in news %}
-        <a href="{{ item.link }}" target="_blank" class="news-card">
-            <img src="{{ item.img_url }}" alt="" class="card-image">
-            <div class="card-content">
-                <h2>{{ item.title }}</h2>
+        <div class="news-card">
+            <!-- リンク部分は画像とタイトルだけ -->
+            <a href="{{ item.link }}" target="_blank" class="card-link">
+                <img src="{{ item.img_url }}" alt="" class="card-image">
+                <div class="card-content">
+                    <h2>{{ item.title }}</h2>
+                </div>
+            </a>
+            
+            <!-- カードの下部にAIボタンを配置 -->
+            <div style="padding: 0 15px 15px 15px;">
+                <button class="ai-btn" onclick="typeAI(this, '{{ item.summary }}')">✨ AI要約</button>
+                <div class="ai-text-box"></div>
             </div>
-        </a>
+        </div>
         {% else %}
         <p style="grid-column: 1/-1; text-align: center; color: var(--sub-text-color);">記事は見つかりませんでした。</p>
         {% endfor %}
     </div>
+
+    <!-- AIっぽいタイピングアニメーションの仕組み -->
+    <script>
+        function typeAI(btnElement, text) {
+            // ボタンを無効化して連打を防ぐ
+            btnElement.disabled = true;
+            btnElement.innerText = "生成中...";
+            
+            // すぐ下にあるテキストボックスを探して表示
+            const textBox = btnElement.nextElementSibling;
+            textBox.style.display = "block";
+            textBox.style.padding = "10px";
+            textBox.innerText = "";
+            
+            let i = 0;
+            // 30ミリ秒ごとに1文字ずつ追加していく処理
+            const timer = setInterval(() => {
+                if (i < text.length) {
+                    textBox.innerText += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                    btnElement.innerText = "✨ 要約完了";
+                }
+            }, 30); // ここの数字を小さくすると速くなる
+        }
+    </script>
 </body>
 </html>
