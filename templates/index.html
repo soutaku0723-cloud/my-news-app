@@ -18,47 +18,133 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Noto Sans JP', sans-serif;
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; margin: 20px 0; letter-spacing: 1px; }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin: 20px 0 20px 0;
+            letter-spacing: 1px;
+            text-align: center;
+        }
 
-        /* 検索窓のスタイル */
+        /* 検索窓 */
         .search-container {
-            width: 100%; max-width: 600px; margin-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
         }
-        .search-form { display: flex; gap: 10px; }
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
         .search-input {
-            flex: 1; padding: 12px 20px; border-radius: 30px; border: 2px solid #e1e4e8;
-            outline: none; font-size: 1rem; transition: 0.2s;
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 2px solid #e1e4e8;
+            outline: none;
+            font-size: 1rem;
         }
-        .search-input:focus { border-color: var(--accent-color); }
         .search-button {
-            padding: 10px 25px; border-radius: 30px; border: none;
-            background: var(--accent-color); color: white; font-weight: bold; cursor: pointer;
+            padding: 10px 25px;
+            border-radius: 30px;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        .nav-buttons { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        /* カテゴリボタン */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .nav-buttons a {
-            text-decoration: none; color: var(--sub-text-color); padding: 10px 25px;
-            border: 2px solid #e1e4e8; border-radius: 30px; font-weight: bold; background: var(--card-bg);
+            text-decoration: none;
+            color: var(--sub-text-color);
+            padding: 10px 25px;
+            border: 2px solid #e1e4e8;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            background: var(--card-bg);
         }
-        .nav-buttons a.active { border-color: var(--accent-color); color: var(--accent-color); background: #eaf5ff; }
 
-        .news-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 30px; }
+        .nav-buttons a:hover, .nav-buttons a.active {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: #eaf5ff;
+        }
+
+        /* ニュース一覧（2列グリッド） */
+        .news-container {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
         .news-card {
-            background: var(--card-bg); border-radius: 15px; overflow: hidden;
-            text-decoration: none; color: inherit; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: 0.3s; border: 1px solid #e1e4e8;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            border: 1px solid #e1e4e8;
+            display: flex;
+            flex-direction: column;
         }
-        .news-card:hover { transform: translateY(-5px); }
-        .card-image { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
-        .card-content { padding: 20px; }
-        .news-card h2 { font-size: 1.2rem; margin: 0 0 10px 0; line-height: 1.4; }
-        .news-card p { font-size: 0.9rem; color: var(--sub-text-color); line-height: 1.6; margin: 0; }
 
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .card-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .news-card h2 {
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.5;
+            color: var(--text-color);
+            /* タイトルも長すぎる場合は2行で省略 */
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+
+        /* スマホ向け調整 */
         @media (max-width: 600px) {
+            body { padding: 10px; }
+            .news-container { grid-template-columns: 1fr; }
             .nav-buttons a { padding: 8px 15px; font-size: 0.85rem; }
         }
     </style>
@@ -73,7 +159,7 @@
         </form>
     </div>
 
-   <div class="nav-buttons">
+    <div class="nav-buttons">
         <a href="/sports" class="{{ 'active' if mode == 'sports' }}">スポーツ</a>
         <a href="/politics" class="{{ 'active' if mode == 'politics' }}">政治外交</a>
         <a href="/others" class="{{ 'active' if mode == 'others' }}">その他</a>
@@ -85,11 +171,10 @@
             <img src="{{ item.img_url }}" alt="" class="card-image">
             <div class="card-content">
                 <h2>{{ item.title }}</h2>
-                <p>{{ item.summary }}</p>
             </div>
         </a>
         {% else %}
-        <p style="text-align: center; color: var(--sub-text-color);">「{{ search_query }}」に一致する記事は見つかりませんでした。</p>
+        <p style="grid-column: 1/-1; text-align: center; color: var(--sub-text-color);">記事は見つかりませんでした。</p>
         {% endfor %}
     </div>
 </body>
